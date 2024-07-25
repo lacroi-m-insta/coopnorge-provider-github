@@ -4,7 +4,7 @@
 PROJECT_NAME := provider-github
 PROJECT_REPO := github.com/coopnorge/$(PROJECT_NAME)
 
-export TERRAFORM_VERSION := 1.3.6
+export TERRAFORM_VERSION := 1.5.5
 
 export TERRAFORM_PROVIDER_SOURCE := integrations/github
 export TERRAFORM_PROVIDER_REPO := https://github.com/integrations/terraform-provider-github
