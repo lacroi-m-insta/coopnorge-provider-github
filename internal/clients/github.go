@@ -61,10 +61,7 @@ type githubConfig struct {
 	RetryableErrors []int      `json:"retryable_errors,omitempty"`
 }
 
-func terraformProviderConfigurationBuilder(creds githubConfig) (terraform.ProviderConfiguration, error) {
-
-	cnf := terraform.ProviderConfiguration{}
-
+func terraformProviderConfigurationAuthSettings(creds githubConfig, cnf terraform.ProviderConfiguration) (terraform.ProviderConfiguration, error) {
 	if creds.BaseURL != nil {
 		cnf[keyBaseURL] = *creds.BaseURL
 	}
@@ -94,6 +91,10 @@ func terraformProviderConfigurationBuilder(creds githubConfig) (terraform.Provid
 		cnf[keyAppAuth] = aaList
 	}
 
+	return cnf, nil
+}
+
+func terraformProviderConfigurationDelaySettings(creds githubConfig, cnf terraform.ProviderConfiguration) terraform.ProviderConfiguration {
 	if creds.WriteDelayMs != nil {
 		cnf[keyWriteDelayMs] = *creds.WriteDelayMs
 	}
@@ -102,6 +103,10 @@ func terraformProviderConfigurationBuilder(creds githubConfig) (terraform.Provid
 		cnf[keyReadDelayMs] = *creds.ReadDelayMs
 	}
 
+	return cnf
+}
+
+func terraformProviderConfigurationRetrySettings(creds githubConfig, cnf terraform.ProviderConfiguration) terraform.ProviderConfiguration {
 	if creds.RetryDelayMs != nil {
 		cnf[keyRetryDelayMs] = *creds.RetryDelayMs
 	}
@@ -113,6 +118,21 @@ func terraformProviderConfigurationBuilder(creds githubConfig) (terraform.Provid
 	if creds.RetryableErrors != nil {
 		cnf[keyRetryableErrors] = creds.RetryableErrors
 	}
+
+	return cnf
+}
+
+func terraformProviderConfigurationBuilder(creds githubConfig) (terraform.ProviderConfiguration, error) {
+
+	cnf := terraform.ProviderConfiguration{}
+
+	cnf, err := terraformProviderConfigurationAuthSettings(creds, cnf)
+	if err != nil {
+		return nil, err
+	}
+
+	cnf = terraformProviderConfigurationDelaySettings(creds, cnf)
+	cnf = terraformProviderConfigurationRetrySettings(creds, cnf)
 
 	return cnf, nil
 
